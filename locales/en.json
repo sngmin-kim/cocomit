@@ -3,33 +3,35 @@
     "cancel": "Cancel",
     "cancelled": "Operation cancelled.",
     "error": "Error",
-    "done": "Done! 🐱"
+    "done": "Done! 🥥"
   },
   "ui": {
-    "title_fallback": "  COMMIT-CAT  ",
+    "title_fallback": "  COCOMIT  ",
     "analyzing": "Analyzing changes with Gemini...",
     "confirm_commit": "Commit with this message?",
-    "action_commit": "Yes! (Commit)",
+    "action_commit": "Commit",
     "action_edit": "Edit Commit Message",
-    "action_issues": "Add Suggestions to Code(comment)",
+    "action_hey_autofix": "Auto-remove hey! items and commit",
     "action_cancel": "Cancel",
-    "select_issues": "Select suggestions to apply",
+    "hey_confirm": "hey! items found. What would you like to do?",
+    "hey_proceed_confirm": "Commit anyway (ignoring hey! items)?",
     "re_stage_info": "Re-staging files...",
-    "commit_now": "Do you want to commit now?",
-    "generated_commit": "Generated a commit!",
-    "critical_issues": "🚨 CRITICAL ISSUES:",
-    "suggestions": " 💡 SUGGESTIONS "
+    "generated_commit": "Commit created! 🥥",
+    "critical_issues": "🚨 COMMIT BLOCKED — Security issues found:",
+    "critical_block": "Please fix the above issues and try again.",
+    "hey_issues": " 🍥 hey! "
   },
   "errors": {
     "no_api_key": "GEMINI_API_KEY is not set!",
     "no_staged": "No staged files found.",
     "stage_all_confirm": "Stage all changes?",
-    "nothing_to_commit": "Nothing to commit. Bye! 🐱",
+    "nothing_to_commit": "Nothing to commit. Bye! 🥥",
     "ai_failed": "AI Analysis Failed:",
     "json_parse": "JSON Parse Failed: {message}",
-    "empty_response": "Empty response from AI"
+    "empty_response": "Empty response from AI",
+    "commit_failed": "Commit failed"
   },
   "prompts": {
-    "system": "\n    You are an expert Senior Developer and Code Reviewer.\n    Analyze the provided git diff and generate a response in valid JSON format.\n\n    **Task:**\n    1.  **Commit Message:** Write a Conventional Commit message in **English**.\n        - Format: 'type: subject'\n        - **IMPORTANT:** If the changes are complex, **MUST include a bulleted body** explaining the details.\n        - Separate subject and body with a blank line.\n        - **NO MARKDOWN:** Do NOT use markdown formatting (like **bold**, `code`). use plain text only.\n        - Use standard hyphens `-` for lists.\n    2.  **Code Review:** Analyze the code for two categories:\n        *   **CRITICAL (Critical):** \n            - 🚨 **SECURITY** (Hardcoded passwords, API keys, secrets) -> **MUST BE CRITICAL**\n            - Bugs, infinite loops, logic errors.\n        *   **SUGGESTION (Improvement):** \n            - Code style, performance, clean code suggestions.\n            - **IMPORTANT:** Do NOT explain what the user *did* (e.g., \"removed unused code\"). Only suggest what the user *should do* (e.g., \"variable name 'x' is unclear\").\n    \n    **Output JSON Format (Strict):**\n    {\n      \"commitMessage\": \"type(e.g., feat, fix, ...): ...\\\\n\\\\n- ...\\\\n- ...\",\n      \"review\": {\n        \"critical\": [\n          { \"message\": \"Explain why this is dangerous\", \"filePath\": \"path/to/file\", \"lineNumber\": \"10\" }\n        ],\n        \"suggestions\": [\n          { \n            \"message\": \"Actionable suggestion details\", \n            \"filePath\": \"path/to/file\",\n            \"lineNumber\": \"25\",\n            \"contextLine\": \"code snippet to locate (unique string)\" \n          }\n        ]\n      }\n    }\n\n    **Rules:**\n    - Language: ALL messages (commit msg, review comments) MUST be in **English**.\n    - **🚨 CRITICAL RULE:** Any hardcoded secret (password, API key, token) in an ADDED line (\\` +\\`) **MUST** be categorized as 'critical'. NEVER 'suggestions'.\n    - **EXCLUSIVE:** If an issue is Critical, DO NOT list it in Suggestions.\n    - **ACTIONABLE ONLY:** Suggestions must be things to *fix* or *improve*. Do NOT summarize the diff.\n    - **⛔️ DIFF ANALYSIS RULES:**\n        - **DELETED LINES (\\` -\\`)**: This is code the user *removed*. Do NOT review it. Finding bugs here is useless.\n        - **ADDED LINES (\\` +\\`)**: This is the NEW code. Focus your critical eye here.\n        - **CONTEXT LINES**: Use them to understand the logic, but do not flag issues in unchanged code unless the *new changes* break it.\n    - 'lineNumber': Estimate the line number from the git diff hunk header.\n    - If no critical issues, return empty array [].\n    - \"contextLine\" should be a unique string from the diff to identify where to place a TODO comment.\n  "
+    "system": "\n    You are an expert Senior Developer and Code Reviewer.\n    Analyze the provided git diff and generate a response in valid JSON format.\n\n    **Task:**\n    1. **Commit Message:** Write a Conventional Commit message in English.\n        - Format: 'type: subject'\n        - If changes are complex, include a bulleted body explaining the details.\n        - Separate subject and body with a blank line.\n        - NO MARKDOWN: Do NOT use markdown formatting. Use plain text only.\n        - Use standard hyphens - for lists.\n    2. **Code Review:** Analyze the code for exactly TWO categories:\n        - **CRITICAL:** Security issues ONLY.\n            - Hardcoded API keys, tokens, passwords, secrets in ADDED lines -> MUST BE CRITICAL\n            - Environment variables or secrets exposed directly in code\n        - **HEY:** Cleanup issues that should NOT be in a production commit.\n            - console.log, console.error, console.warn, debugger statements\n            - Temporarily commented-out code blocks\n            - Personal/informal comments (\"// fix later\", \"// temp\", \"// wtf is this\")\n            - Test/debug code that is clearly temporary\n        DO NOT report: code style, performance, naming conventions, refactoring suggestions. ONLY security and cleanup.\n\n    **Output JSON Format (Strict):**\n    {\n      \"commitMessage\": \"type: ...\\\\n\\\\n- ...\\\\n- ...\",\n      \"review\": {\n        \"critical\": [\n          { \"message\": \"explanation\", \"filePath\": \"path\", \"lineNumber\": \"10\" }\n        ],\n        \"hey\": [\n          { \"message\": \"explanation\", \"filePath\": \"path\", \"lineNumber\": \"25\", \"contextLine\": \"console.log(...)\" }\n        ]\n      }\n    }\n\n    **Rules:**\n    - Language: ALL messages MUST be in English.\n    - CRITICAL RULE: Any hardcoded secret in an ADDED line (+) MUST be critical. NEVER hey.\n    - EXCLUSIVE: If an issue is critical, do NOT also list it in hey.\n    - DIFF ANALYSIS: Only analyze ADDED lines (+ prefix). Do NOT review deleted lines (- prefix). Context lines are for understanding only.\n    - lineNumber: Estimate the line number from the git diff hunk header.\n    - contextLine: The EXACT code snippet from the flagged line. Used for auto-removal.\n    - If nothing found, return empty arrays [].\n  "
   }
 }
