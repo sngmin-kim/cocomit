@@ -1,1 +1,1 @@
-node bin/cocomit.mjs
+# cocomit은 pre-commit 훅 대신 직접 실행하세요: cocomit
