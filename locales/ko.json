@@ -19,7 +19,7 @@
     "generated_commit": "커밋이 생성됐어요! 🥥",
     "critical_issues": "🚨 커밋 차단 — 보안 이슈 발견:",
     "critical_block": "위 항목을 수정한 후 다시 시도하세요.",
-    "hey_issues": " 🍥 hey! "
+    "hey_issues": " HEY! "
   },
   "errors": {
     "no_api_key": "GEMINI_API_KEY가 설정되지 않았어요.",

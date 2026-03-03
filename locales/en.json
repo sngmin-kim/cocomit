@@ -19,7 +19,7 @@
     "generated_commit": "Commit created! 🥥",
     "critical_issues": "🚨 COMMIT BLOCKED — Security issues found:",
     "critical_block": "Please fix the above issues and try again.",
-    "hey_issues": " 🍥 hey! "
+    "hey_issues": " HEY! "
   },
   "errors": {
     "no_api_key": "GEMINI_API_KEY is not set!",
