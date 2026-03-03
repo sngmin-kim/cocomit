@@ -14,7 +14,6 @@ export function getFileDiff(filePath) {
     if (IGNORE_PATTERNS.some((p) => filePath.includes(p))) {
       return `(Ignored file: ${filePath})`;
     }
-//asdf
     // Use -- to separate paths from revisions (fixes ambiguity if file is deleted)
     const diff = execSync(`git diff --staged -- "${filePath}"`, {
       encoding: "utf-8",
