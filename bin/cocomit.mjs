@@ -277,6 +277,20 @@ async function main() {
       }
 
       heyItems = failedItems;
+
+      // Label says "자동 제거 후 커밋" — commit automatically if all resolved
+      if (heyItems.length === 0) {
+        console.log("");
+        const commitResult = spawnSync("git", ["commit", "-m", currentMessage], {
+          stdio: "inherit",
+        });
+        if (commitResult.status !== 0) {
+          p.log.error(i18n.t("errors.commit_failed"));
+          process.exit(1);
+        }
+        p.outro(chalk.green(i18n.t("ui.generated_commit")));
+        process.exit(0);
+      }
     }
   }
 }
