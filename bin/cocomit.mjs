@@ -52,13 +52,6 @@ function removeHeyItem(item) {
 }
 
 async function main() {
-  // Prevent recursive invocation when cocomit itself calls `git commit`
-  // which re-triggers this pre-commit hook
-  if (process.env.COCOMIT_RUNNING) {
-    process.exit(0);
-  }
-  process.env.COCOMIT_RUNNING = "1";
-
   printTitle(i18n);
 
   if (!process.env.GEMINI_API_KEY) {
