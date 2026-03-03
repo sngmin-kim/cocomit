@@ -1,14 +1,16 @@
 {
-  "name": "commit-cat",
-  "version": "0.3.0",
-  "description": "AI-powered smart commit generator",
+  "name": "cocomit",
+  "version": "0.4.0",
+  "description": "AI-powered pre-commit code reviewer for coconut team",
   "type": "module",
-  "main": "bin/commit-cat.mjs",
+  "main": "bin/cocomit.mjs",
   "bin": {
-    "commit-cat": "bin/commit-cat.mjs"
+    "cocomit": "bin/cocomit.mjs",
+    "cocopr": "bin/cocopr.mjs"
   },
   "scripts": {
-    "start": "node bin/commit-cat.mjs"
+    "start": "node bin/cocomit.mjs",
+    "prepare": "[ -f bin/cocomit.mjs ] && husky || true"
   },
   "dependencies": {
     "@clack/prompts": "^0.7.0",
@@ -16,5 +18,8 @@
     "chalk": "^5.3.0",
     "dotenv": "^16.4.5",
     "gradient-string": "^2.0.2"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0"
   }
 }
