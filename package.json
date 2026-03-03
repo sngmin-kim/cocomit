@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "node bin/cocomit.mjs",
+    "cocomit": "node bin/cocomit.mjs",
     "prepare": "[ -f bin/cocomit.mjs ] && husky || true"
   },
   "dependencies": {
