@@ -231,6 +231,7 @@ async function main() {
 
       const commitResult = spawnSync("git", ["commit", "-m", currentMessage], {
         stdio: "inherit",
+        env: { ...process.env, COCOMIT_RUNNING: "1" },
       });
       if (commitResult.status !== 0) {
         p.log.error(i18n.t("errors.commit_failed"));
@@ -283,6 +284,7 @@ async function main() {
         console.log("");
         const commitResult = spawnSync("git", ["commit", "-m", currentMessage], {
           stdio: "inherit",
+          env: { ...process.env, COCOMIT_RUNNING: "1" },
         });
         if (commitResult.status !== 0) {
           p.log.error(i18n.t("errors.commit_failed"));

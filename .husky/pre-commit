@@ -1,1 +1,3 @@
-# cocomit은 pre-commit 훅 대신 직접 실행하세요: cocomit
+#!/bin/sh
+[ -n "$COCOMIT_RUNNING" ] && exit 0
+cocomit
