@@ -229,6 +229,19 @@ async function main() {
         if (!proceed) continue;
       }
 
+      // Run the user project's .husky/pre-commit directly (bypassed by COCOMIT_RUNNING during git commit)
+      const preCommitPath = path.join(process.cwd(), ".husky", "pre-commit");
+      if (fs.existsSync(preCommitPath)) {
+        const preCommitResult = spawnSync("sh", [preCommitPath], {
+          stdio: "inherit",
+          cwd: process.cwd(),
+        });
+        if (preCommitResult.status !== 0) {
+          p.log.error(i18n.t("errors.commit_failed"));
+          process.exit(1);
+        }
+      }
+
       const commitResult = spawnSync("git", ["commit", "-m", currentMessage], {
         stdio: "inherit",
         env: { ...process.env, COCOMIT_RUNNING: "1" },
@@ -282,6 +295,20 @@ async function main() {
       // Label says "자동 제거 후 커밋" — commit automatically if all resolved
       if (heyItems.length === 0) {
         console.log("");
+
+        // Run the user project's .husky/pre-commit directly
+        const preCommitPath = path.join(process.cwd(), ".husky", "pre-commit");
+        if (fs.existsSync(preCommitPath)) {
+          const preCommitResult = spawnSync("sh", [preCommitPath], {
+            stdio: "inherit",
+            cwd: process.cwd(),
+          });
+          if (preCommitResult.status !== 0) {
+            p.log.error(i18n.t("errors.commit_failed"));
+            process.exit(1);
+          }
+        }
+
         const commitResult = spawnSync("git", ["commit", "-m", currentMessage], {
           stdio: "inherit",
           env: { ...process.env, COCOMIT_RUNNING: "1" },
